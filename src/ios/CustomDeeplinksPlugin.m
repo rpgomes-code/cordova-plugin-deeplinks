@@ -28,7 +28,6 @@ static NSString *pendingURL = nil;
         [self.commandDelegate evalJs:js];
         NSLog(@"[CustomDeeplinks] Fire universal link immediately: %@", urlString);
         
-        // Limpar o pendingURL para evitar chamadas duplas no getPendingDeeplink num warm start
         pendingURL = nil;
     }
 
