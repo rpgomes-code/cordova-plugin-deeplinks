@@ -4,44 +4,51 @@
 
 static NSString *pendingURL = nil;
 
-+ (void)setPendingURL:(NSString *)url {
-    pendingURL = [url copy];
-    NSLog(@"[CustomDeeplinks] Static pendingURL updated: %@", pendingURL);
-}
-
 - (void)pluginInitialize {
-    NSLog(@"[CustomDeeplinks] Plugin initialized. Current pending: %@", pendingURL);
-}
-
-- (void)handleUrl:(NSString *)urlString {
-    if (urlString == nil || [urlString isEqualToString:@""]) return;
-
-    [CustomDeeplinksPlugin setPendingURL:urlString];
-
-    if (self.webViewEngine && self.webViewEngine.engineWebView) {
-        NSString *js = [NSString stringWithFormat:
-            @"window.dispatchEvent(new CustomEvent('deeplinks', { detail: { url: '%@' } }));", 
-            urlString];
-            
+    if (pendingURL != nil) {
+        NSString *escapedURL = [pendingURL stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
+        NSString *js = [NSString stringWithFormat:@"window.CustomDeeplinks && window.CustomDeeplinks.onDeepLink && window.CustomDeeplinks.onDeepLink('%@');", escapedURL];
         [self.commandDelegate evalJs:js];
+        NSLog(@"[CustomDeeplinks] Fire pending universal link: %@", pendingURL);
+        pendingURL = nil;
     }
 }
 
 - (BOOL)handleUserActivity:(NSUserActivity *)userActivity {
     if (userActivity.webpageURL == nil) return NO;
-    [self handleUrl:userActivity.webpageURL.absoluteString];
+
+    NSString *urlString = userActivity.webpageURL.absoluteString;
+    NSLog(@"[CustomDeeplinks] Handling universal link: %@", urlString);
+
+    pendingURL = urlString;
+
+    if (self.webViewEngine && self.webViewEngine.engineWebView) {
+        NSString *escapedURL = [urlString stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
+        NSString *js = [NSString stringWithFormat:@"window.CustomDeeplinks && window.CustomDeeplinks.onDeepLink && window.CustomDeeplinks.onDeepLink('%@');", escapedURL];
+        [self.commandDelegate evalJs:js];
+        NSLog(@"[CustomDeeplinks] Fire universal link immediately: %@", urlString);
+        
+        // Limpar o pendingURL para evitar chamadas duplas no getPendingDeeplink num warm start
+        pendingURL = nil;
+    }
+
     return YES;
 }
 
 - (void)getPendingDeeplink:(CDVInvokedUrlCommand *)command {
-    CDVPluginResult *result;
-    if (pendingURL != nil && ![pendingURL isEqualToString:@""]) {
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:pendingURL];
-        pendingURL = nil; // Consumed
+    if (pendingURL != nil) {
+        NSLog(@"[CustomDeeplinks] Returning pending URL: %@", pendingURL);
+        
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:pendingURL];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+
+        pendingURL = nil;
     } else {
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:nil];
+        NSLog(@"[CustomDeeplinks] No pending URL");
+        
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
 @end
