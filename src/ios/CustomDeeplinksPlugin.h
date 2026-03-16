@@ -5,7 +5,8 @@
 @interface CustomDeeplinksPlugin : CDVPlugin
 
 + (void)setPendingURL:(NSString *)url;
-- (void)getPendingDeeplink:(CDVInvokedUrlCommand *)command;
+- (void)handleUrl:(NSString *)urlString;
 - (BOOL)handleUserActivity:(NSUserActivity *)userActivity;
+- (void)getPendingDeeplink:(CDVInvokedUrlCommand *)command;
 
 @end
