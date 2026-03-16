@@ -3,36 +3,39 @@
 
 @implementation AppDelegate (CustomDeeplinksPlugin)
 
+// Universal Link handler
 - (BOOL)application:(UIApplication *)application 
 continueUserActivity:(NSUserActivity *)userActivity 
 restorationHandler:(void (^)(NSArray *))restorationHandler {
 
+    NSLog(@"[CustomDeeplinks] First click");
+    
     if (![userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb] || userActivity.webpageURL == nil) {
+        NSLog(@"[CustomDeeplinks] Invalid URL");
         return NO;
     }
 
-    NSString *urlString = userActivity.webpageURL.absoluteString;
-    [CustomDeeplinksPlugin setPendingURL:urlString];
-
-    if (self.viewController != nil) {
-        CustomDeeplinksPlugin *plugin = (CustomDeeplinksPlugin *)[self.viewController getCommandInstance:@"CustomDeeplinks"];
-        if (plugin != nil) {
-            [plugin handleUserActivity:userActivity];
-        }
+    CustomDeeplinksPlugin *plugin = [self.viewController getCommandInstance:@"CustomDeeplinks"];
+    if (plugin == nil) {
+        NSLog(@"[Deeplinks] Plugin not found");
     }
-    return YES;
+
+    NSLog(@"[CustomDeeplinks] URL: %@", userActivity.webpageURL.absoluteString);
+
+    BOOL handled = [plugin handleUserActivity:userActivity];
+
+    NSLog(@"[CustomDeeplinks] handleUserActivity result: %@", handled ? @"YES" : @"NO");
+
+    return handled;
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    
-    [CustomDeeplinksPlugin setPendingURL:url.absoluteString];
+// Deep link (URL scheme) handler
+- (BOOL)application:(UIApplication *)app 
+            openURL:(NSURL *)url 
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
 
-    if (self.viewController != nil) {
-        CustomDeeplinksPlugin *plugin = (CustomDeeplinksPlugin *)[self.viewController getCommandInstance:@"CustomDeeplinks"];
-        if (plugin != nil) {
-            [plugin handleUrl:url.absoluteString];
-        }
-    }
+    NSLog(@"[CustomDeeplinks] App opened via URL scheme: %@", url.absoluteString);
+
     return YES;
 }
 
