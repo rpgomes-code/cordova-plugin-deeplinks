@@ -15,7 +15,6 @@ restorationHandler:(void (^)(NSArray *))restorationHandler {
     [CustomDeeplinksPlugin setPendingURL:urlString];
 
     if (self.viewController != nil) {
-        // O cast (CustomDeeplinksPlugin *) resolve erros de compilação
         CustomDeeplinksPlugin *plugin = (CustomDeeplinksPlugin *)[self.viewController getCommandInstance:@"CustomDeeplinks"];
         if (plugin != nil) {
             [plugin handleUserActivity:userActivity];
