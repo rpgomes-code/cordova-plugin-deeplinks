@@ -45,6 +45,7 @@ restorationHandler:(void (^)(NSArray *))restorationHandler {
         CustomDeeplinksPlugin *plugin = [self.viewController getCommandInstance:@"CustomDeeplinks"];
         if (plugin != nil) {
             NSLog(@"[CustomDeeplinks] Notifying plugin of URL Scheme");
+            [plugin handleUrl:url.absoluteString];
         }
     }
 
