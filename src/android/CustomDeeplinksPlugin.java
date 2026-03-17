@@ -45,6 +45,10 @@ public class CustomDeeplinksPlugin extends CordovaPlugin {
                 callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT));
             }
             return true;
+        } else if ("clearPendingDeeplink".equals(action)) {
+            pendingURL = null;
+            callbackContext.success();
+            return true;
         }
 
         return false;
