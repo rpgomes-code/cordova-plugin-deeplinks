@@ -48,4 +48,11 @@ static NSString *pendingURL = nil;
     }
 }
 
+- (void)clearPendingDeeplink:(CDVInvokedUrlCommand *)command {
+    NSLog(@"[CustomDeeplinks] Clearing pending URL via JS acknowledgment");
+    pendingURL = nil;
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
+
 @end
