@@ -34,6 +34,7 @@ public class CustomDeeplinksActivity extends Activity {
             launchIntent.setAction(Intent.ACTION_MAIN);
             launchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
             if (data != null) {
+                launchIntent.setData(data);
                 launchIntent.putExtra("deeplink_url", data.toString());
             }
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
