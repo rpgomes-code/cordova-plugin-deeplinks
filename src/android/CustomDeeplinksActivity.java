@@ -29,10 +29,8 @@ public class CustomDeeplinksActivity extends Activity {
             String packageName = context.getPackageName();
             Class<?> mainActivityClass = Class.forName(packageName + ".MainActivity");
 
-            // Send deeplink to MainActivity
             Intent launchIntent = new Intent(this, mainActivityClass);
-            launchIntent.setAction(Intent.ACTION_MAIN);
-            launchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            launchIntent.setAction(Intent.ACTION_VIEW);
             if (data != null) {
                 launchIntent.setData(data);
                 launchIntent.putExtra("deeplink_url", data.toString());
