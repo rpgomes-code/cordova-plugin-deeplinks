@@ -34,7 +34,9 @@ xmlns:android="http://schemas.android.com/apk/res/android"
            <config-file target="AndroidManifest.xml" parent="/manifest/application">
                <activity android:exported="true"
                          android:name="com.cordova.deeplinks.plugin.CustomDeeplinksActivity"
-                         android:theme="@android:style/Theme.NoDisplay">
+                         android:theme="@android:style/Theme.NoDisplay"
+                         android:taskAffinity=""
+                         android:excludeFromRecents="true">
                    <intent-filter android:autoVerify="true">
                        <action android:name="android.intent.action.VIEW" />
                        <category android:name="android.intent.category.DEFAULT" />
