@@ -16,6 +16,7 @@ public class CustomDeeplinksActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         try {
+            /*
             Intent incomingIntent = getIntent();
             Uri data = incomingIntent.getData();
 
@@ -39,6 +40,7 @@ public class CustomDeeplinksActivity extends Activity {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             startActivity(launchIntent);
+            */
         } catch (Exception e) {
             Log.e(TAG, "Error handling deep link intent", e);
         } finally {
