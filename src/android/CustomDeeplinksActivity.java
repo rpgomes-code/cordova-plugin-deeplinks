@@ -44,29 +44,24 @@ public class CustomDeeplinksActivity extends Activity {
             startActivity(launchIntent);
             */
             Intent incomingIntent = getIntent();
-    
-            AppsFlyerLib.getInstance().sendPushNotificationData(this.getActivity()); 
-            Uri data = incomingIntent.getData();
-        
-            if (data != null) {
-                Log.d(TAG, "Received deep link: " + data.toString());
+            
+            if (incomingIntent != null) {
+                com.appsflyer.AppsFlyerLib.getInstance().performOnDeepLinking(incomingIntent, this);[cite: 1]
             }
+            Uri data = incomingIntent.getData();
         
             Context context = this;
             String packageName = context.getPackageName();
             Class<?> mainActivityClass = Class.forName(packageName + ".MainActivity");
         
             Intent launchIntent = new Intent(this, mainActivityClass);
-            launchIntent.setAction(Intent.ACTION_MAIN);
-            launchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            
+            if (incomingIntent.getExtras() != null) {
+                launchIntent.putExtras(incomingIntent.getExtras());[cite: 1]
+            }
             
             if (data != null) {
                 launchIntent.putExtra("deeplink_url", data.toString());
-            }
-            
-            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            if (incomingIntent.getExtras() != null) {
-                launchIntent.putExtras(incomingIntent.getExtras());
             }
         
             startActivity(launchIntent);
