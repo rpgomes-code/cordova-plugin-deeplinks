@@ -44,30 +44,31 @@ public class CustomDeeplinksActivity extends Activity {
             startActivity(launchIntent);
             */
             Intent incomingIntent = getIntent();
-            
+            Uri data = incomingIntent.getData();
+            Log.d(TAG, "Received deep link: " + data.toString());
+        
             if (incomingIntent != null) {
                 com.appsflyer.AppsFlyerLib.getInstance().performOnDeepLinking(incomingIntent, this);
             }
         
-            Uri data = incomingIntent.getData();
-        
-            Context context = this;
-            String packageName = context.getPackageName();
+            String packageName = getPackageName();
             Class<?> mainActivityClass = Class.forName(packageName + ".MainActivity");
         
             Intent launchIntent = new Intent(this, mainActivityClass);
-            launchIntent.setAction(Intent.ACTION_MAIN);
-            launchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
             
-            if (incomingIntent != null && incomingIntent.getExtras() != null) {
-                launchIntent.putExtras(incomingIntent.getExtras());
+            if (incomingIntent != null) {
+                launchIntent.setAction(incomingIntent.getAction());
+                launchIntent.setData(incomingIntent.getData());
+                
+                if (incomingIntent.getExtras() != null) {
+                    launchIntent.putExtras(incomingIntent.getExtras());
+                }
             }
-            
+        
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             if (data != null) {
                 launchIntent.putExtra("deeplink_url", data.toString());
             }
-            
-            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         
             startActivity(launchIntent);
         } catch (Exception e) {
